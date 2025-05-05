@@ -21,7 +21,7 @@ class HomeController extends AbstractController
     #[Route('/guests', name: 'guests')]
     public function guests(EntityManagerInterface $em): Response
     {
-        $guests = $em->getRepository(User::class)->findBy(['admin' => false]);
+        $guests = $em->getRepository(User::class)->findGuests();
 
         return $this->render('front/guests.html.twig', [
             'guests' => $guests,
@@ -48,7 +48,16 @@ class HomeController extends AbstractController
         $albums = $em->getRepository(Album::class)->findAll();
         $album = $id ? $em->getRepository(Album::class)->find($id) : null;
 
-        $user = $em->getRepository(User::class)->findOneBy(['admin' => true]);
+        // Récupère le premier admin trouvé
+        $admins = $em->getRepository(User::class)->findAdmins();
+        
+        if (empty($admins)) {
+            $user = new User();
+            $user->setEmail('admin@default.com');
+            $user->setRoles(['ROLE_ADMIN']);
+        }
+        
+        // $user = $admins[0];
 
         $medias = $album
             ? $em->getRepository(Media::class)->findBy(['album' => $album])
