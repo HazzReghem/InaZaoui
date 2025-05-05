@@ -6,10 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,7 +20,13 @@ class User
     private ?int $id = null;
 
     #[ORM\Column]
-    private bool $admin = false;
+    private array $roles = [];
+
+    #[ORM\Column]
+    private ?string $password = null;
+
+    // #[ORM\Column]
+    // private bool $admin = false;
 
     #[ORM\Column]
     private ?string $name = null;
@@ -39,6 +48,41 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // garantie d’avoir au moins ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getEmail(): ?string
@@ -83,13 +127,13 @@ class User
         $this->medias = $medias;
     }
 
-    public function isAdmin(): bool
-    {
-        return $this->admin;
-    }
+    // public function isAdmin(): bool
+    // {
+    //     return $this->admin;
+    // }
 
-    public function setAdmin(bool $admin): void
-    {
-        $this->admin = $admin;
-    }
+    // public function setAdmin(bool $admin): void
+    // {
+    //     $this->admin = $admin;
+    // }
 }
