@@ -1,1 +1,1 @@
-{"version":1,"defects":[],"times":{"App\\Tests\\Smoke\\BootTest::testBoot":1.001}}
+{"version":1,"defects":[],"times":{"App\\Tests\\Smoke\\BootTest::testBoot":20.428}}

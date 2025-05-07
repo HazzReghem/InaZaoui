@@ -40,6 +40,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'user')]
     private Collection $medias;
 
+    #[ORM\Column]
+    private ?bool $isBlocked = null;
+
     public function __construct()
     {
         $this->medias = new ArrayCollection();
@@ -136,4 +139,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // {
     //     $this->admin = $admin;
     // }
+
+    public function isBlocked(): ?bool
+    {
+        return $this->isBlocked;
+    }
+
+    public function setIsBlocked(bool $isBlocked): static
+    {
+        $this->isBlocked = $isBlocked;
+
+        return $this;
+    }
 }

@@ -33,6 +33,8 @@ class HomeController extends AbstractController
     {
         $guest = $em->getRepository(User::class)->find($id);
 
+        // dd($guest);
+
         if (!$guest) {
             throw $this->createNotFoundException('Guest not found.');
         }

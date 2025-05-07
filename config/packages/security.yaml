@@ -32,7 +32,7 @@ security:
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/media, roles: ROLE_USER }
+        - { path: ^/portfolio, roles: ROLE_USER }
         - { path: ^/login, roles: PUBLIC_ACCESS }
 
 when@test:
