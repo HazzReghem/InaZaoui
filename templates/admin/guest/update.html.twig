@@ -1,0 +1,10 @@
+{% extends 'admin.html.twig' %}
+
+{% block admin %}
+    <h1>Modifier un invité</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success mt-3">Enregistrer</button>
+    {{ form_end(form) }}
+{% endblock %}

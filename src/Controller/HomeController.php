@@ -59,7 +59,7 @@ class HomeController extends AbstractController
             $user->setRoles(['ROLE_ADMIN']);
         }
         
-        // $user = $admins[0];
+        $user = $admins[0];
 
         $medias = $album
             ? $em->getRepository(Media::class)->findBy(['album' => $album])

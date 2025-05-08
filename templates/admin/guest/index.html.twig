@@ -1,0 +1,37 @@
+{% extends 'admin.html.twig' %}
+
+{% block admin %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Invités</h1>
+        <a href="{{ path('admin_guest_add') }}" class="btn btn-primary">Ajouter un invité</a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Bloqué</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for guest in guests %}
+                <tr>
+                    <td>{{ guest.name }}</td>
+                    <td>{{ guest.email }}</td>
+                    <td>{{ guest.isBlocked ? 'Oui' : 'Non' }}</td>
+                    <td>
+                        <a href="{{ path('admin_guest_update', {id: user.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="{{ path('admin_guest_toggle_block', {id: guest.id}) }}" class="btn btn-secondary btn-sm">
+                            {{ guest.isBlocked ? 'Débloquer' : 'Bloquer' }}
+                        </a>
+                        <a href="{{ path('admin_guest_delete', {id: guest.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cet invité ?')">Supprimer</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4">Aucun invité</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
