@@ -39,7 +39,7 @@ class GuestController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('admin_guests');
+            return $this->redirectToRoute('admin_guest_index');
         }
 
         return $this->render('admin/guest/add.html.twig', [
@@ -68,7 +68,7 @@ class GuestController extends AbstractController
 
             $em->flush();
 
-            return $this->redirectToRoute('admin_guests');
+            return $this->redirectToRoute('admin_guest_index');
         }
 
         return $this->render('admin/guest/update.html.twig', [
@@ -84,7 +84,7 @@ class GuestController extends AbstractController
         $user->setIsBlocked(!$user->isBlocked());
         $em->flush();
 
-        return $this->redirectToRoute('admin_guests');
+        return $this->redirectToRoute('admin_guest_index');
     }
 
     #[Route('/delete/{id}', name: 'admin_guest_delete')]
@@ -93,6 +93,6 @@ class GuestController extends AbstractController
         $em->remove($user);
         $em->flush();
 
-        return $this->redirectToRoute('admin_guests');
+        return $this->redirectToRoute('admin_guest_index');
     }
 }

@@ -22,7 +22,7 @@
                     <td>{{ guest.email }}</td>
                     <td>{{ guest.isBlocked ? 'Oui' : 'Non' }}</td>
                     <td>
-                        <a href="{{ path('admin_guest_update', {id: user.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="{{ path('admin_guest_update', {id: guest.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
                         <a href="{{ path('admin_guest_toggle_block', {id: guest.id}) }}" class="btn btn-secondary btn-sm">
                             {{ guest.isBlocked ? 'Débloquer' : 'Bloquer' }}
                         </a>

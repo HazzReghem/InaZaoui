@@ -1,7 +1,7 @@
 {% extends 'admin.html.twig' %}
 
 {% block admin %}
-    <h1>{{ is_edit ? 'Modifier' : 'Ajouter' }} un invité</h1>
+    <h1>Invité</h1>
 
     {{ form_start(form) }}
         <div class="mb-3">
@@ -10,6 +10,6 @@
             {{ form_row(form.password) }}
             {{ form_row(form.isBlocked) }}
         </div>
-        <button class="btn btn-success">{{ is_edit ? 'Mettre à jour' : 'Créer' }}</button>
+        <button class="btn btn-success">Ajouter</button>
     {{ form_end(form) }}
 {% endblock %}

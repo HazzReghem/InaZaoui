@@ -17,14 +17,22 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class)
-            ->add('email', EmailType::class)
-            ->add('password', PasswordType::class)
+            ->add('name', TextType::class, [
+                'label' => 'Nom',
+                'attr' => ['placeholder' => 'Entrez le nom de votre invité']
+            ])
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
+                'attr' => ['placeholder' => 'Entrez l\'email de votre invité']
+            ])
+            ->add('password', PasswordType::class, [
+                'label' => 'Mot de passe',
+                'attr' => ['placeholder' => 'Entrez le mot de passe de votre invité']
+            ])
             ->add('isBlocked', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Bloqué ?'
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider']);
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
