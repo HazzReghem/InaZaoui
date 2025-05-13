@@ -47,8 +47,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findGuests(): array
     {
+        return array_filter($this->findAll(), function ($u) {
+            return !in_array('ROLE_ADMIN', $u->getRoles()) && !$u->isBlocked();
+        });
+    }
+
+    public function findAllGuests(): array
+    {
         return array_filter($this->findAll(), fn($u) => !in_array('ROLE_ADMIN', $u->getRoles()));
     }
+
 
 //    /**
 //     * @return User[] Returns an array of User objects

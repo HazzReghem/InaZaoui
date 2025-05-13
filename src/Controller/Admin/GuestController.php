@@ -17,7 +17,7 @@ class GuestController extends AbstractController
     #[Route('/', name: 'admin_guest_index')]
     public function index(EntityManagerInterface $em): Response
     {
-        $guests = $em->getRepository(User::class)->findGuests();
+        $guests = $em->getRepository(User::class)->findAllGuests();
 
         return $this->render('admin/guest/index.html.twig', [
             'guests' => $guests,
