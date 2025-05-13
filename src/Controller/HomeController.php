@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 class HomeController extends AbstractController
 {
@@ -45,25 +46,26 @@ class HomeController extends AbstractController
     }
 
     #[Route('/portfolio/{id}', name: 'portfolio')]
-    public function portfolio(EntityManagerInterface $em, ?int $id = null): Response
+    public function portfolio(EntityManagerInterface $em, Request $request, ?int $id = null): Response
     {
+        
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
         $albums = $em->getRepository(Album::class)->findAll();
+
         $album = $id ? $em->getRepository(Album::class)->find($id) : null;
 
-        // Récupère le premier admin trouvé
-        $admins = $em->getRepository(User::class)->findAdmins();
-        
-        if (empty($admins)) {
-            $user = new User();
-            $user->setEmail('admin@default.com');
-            $user->setRoles(['ROLE_ADMIN']);
+        if ($album) {
+            // Si un album est précisé, on récupère uniquement les médias liés à cet album
+            $medias = $em->getRepository(Media::class)->findBy(['album' => $album, 'user' => $user]);
+        } else {
+            // Sinon, on affiche tous les médias de l'utilisateur
+            $medias = $em->getRepository(Media::class)->findBy(['user' => $user]);
         }
-        
-        $user = $admins[0];
-
-        $medias = $album
-            ? $em->getRepository(Media::class)->findBy(['album' => $album])
-            : $em->getRepository(Media::class)->findBy(['user' => $user]);
 
         return $this->render('front/portfolio.html.twig', [
             'albums' => $albums,

@@ -18,18 +18,17 @@
                                     Albums
                                 </a>
                             </li>
-                            {# <li class="nav-item">
-                                <a class="nav-link" href="">
-                                    Invités
-                                </a>
-                            </li> #}
                             <li>
                                 <a class="nav-link" href="{{ path('admin_guest_index') }}">
                                     Gestion Invités
                                 </a>
                             </li>
-
                         {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('home') }}">
+                                Retour à l'accueil
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
