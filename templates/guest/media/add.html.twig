@@ -1,0 +1,13 @@
+{% extends 'guest.html.twig' %}
+
+{% block guest %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Medias</h1>
+        <a href="{{ path('guest_media_index') }}" class="btn btn-primary">Retour</a>
+    </div>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    {{ form_end(form) }}
+
+{% endblock %}

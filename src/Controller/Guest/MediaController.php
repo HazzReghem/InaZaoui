@@ -17,22 +17,28 @@ class MediaController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+        $user = $this->getUser();
         $page = $request->query->getInt('page', 1);
-        $criteria = [];
+        $limit = 50;
+        $offset = ($page - 1) * $limit;
 
-        $medias = $em->getRepository(Media::class)->findBy([
-            'user' => $this->getUser()
-        ]);
+        $medias = $em->getRepository(Media::class)->findBy(
+            ['user' => $user],
+            ['id' => 'ASC'],
+            $limit,
+            $offset
+        );
 
-        
-        $total = $em->getRepository(Media::class)->count([]);
+        // Media de l'utilisateur
+        $total = $em->getRepository(Media::class)->count(['user' => $user]);
 
         return $this->render('guest/media/index.html.twig', [
-            'medias' => $medias, 
+            'medias' => $medias,
             'total' => $total,
             'page' => $page
         ]);
     }
+
 
     #[Route('/add', name: 'guest_media_add')]
     public function add(Request $request, EntityManagerInterface $em): Response
