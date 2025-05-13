@@ -90,6 +90,17 @@ class GuestController extends AbstractController
     #[Route('/delete/{id}', name: 'admin_guest_delete')]
     public function delete(User $user, EntityManagerInterface $em): Response
     {
+        // Supprimer les médias de l'utilisateur
+        foreach ($user->getMedias() as $media) {
+            $em->remove($media);
+            // Supprimer aussi physiquement les fichiers si besoin :
+            $filePath = $media->getPath();
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        // Supprimer ensuite l'utilisateur
         $em->remove($user);
         $em->flush();
 
