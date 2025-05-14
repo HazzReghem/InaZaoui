@@ -25,8 +25,8 @@ class MediaController extends AbstractController
         $medias = $em->getRepository(Media::class)->findBy(
             $criteria,
             ['id' => 'ASC'],
-            25,
-            25 * ($page - 1)
+            50,
+            50 * ($page - 1)
         );
 
         $total = $em->getRepository(Media::class)->count([]);
