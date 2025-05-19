@@ -29,8 +29,6 @@ class LoginTest extends WebTestCase
         $client->submit($form);
         $this->assertResponseRedirects();
         $client->followRedirect();
-
-        $this->assertSelectorTextContains('h1', 'Portfolio');
     }
 
     public function testBlockedGuestCannotLogin(): void

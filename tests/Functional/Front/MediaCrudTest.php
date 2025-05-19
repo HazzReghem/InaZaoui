@@ -2,18 +2,25 @@
 
 namespace App\Tests\Functional\Front;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 
 class MediaCrudTest extends WebTestCase
 {
     public function testGuestCanAddAndDeleteMedia(): void
     {
-        $client = static::createClient([], [
-            'PHP_AUTH_USER' => 'guest1@test.com',
-            'PHP_AUTH_PW'   => 'password',
-        ]);
+        $client = static::createClient();
+
+        // Récupérer l'utilisateur de test depuis la base de données
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('guest1@test.com');
+
+        // Vérifiez que l'utilisateur existe
+        $this->assertNotNull($testUser, 'Test user guest1@test.com not found in fixtures.');
+
+        // Connecter l'utilisateur
+        $client->loginUser($testUser);
 
         // Aller à la page d'ajout
         $crawler = $client->request('GET', '/guest/media/add');
@@ -21,23 +28,45 @@ class MediaCrudTest extends WebTestCase
 
         // Fichier fictif
         $filePath = __DIR__ . '/../../Fixtures/test.jpg';
-        copy(__DIR__.'/../../Fixtures/dummy.jpeg', $filePath); 
+        if (!file_exists(__DIR__.'/../../Fixtures/dummy.jpeg')) {
+            touch(__DIR__.'/../../Fixtures/dummy.jpeg');
+        }
+        copy(__DIR__.'/../../Fixtures/dummy.jpeg', $filePath);
 
         $form = $crawler->selectButton('Ajouter')->form([
             'media[title]' => 'Nouveau Média Test',
-            'media[path]' => new UploadedFile($filePath, 'test.jpg')
+            'media[file]' => new UploadedFile($filePath, 'test.jpg', 'image/jpeg', null, true)
         ]);
 
         $client->submit($form);
-        $this->assertResponseRedirects();
-        $client->followRedirect();
-        $this->assertSelectorTextContains('.media-title', 'Nouveau Média Test');
+        $this->assertResponseRedirects('/guest/media/');
+        $crawler = $client->followRedirect();
 
-        // Récupérer l'ID du média ajouté pour suppression
+        $this->assertSelectorTextContains('tbody tr:last-child td:nth-child(2)', 'Nouveau Média Test');
+
         $media = self::getContainer()->get('doctrine')->getRepository(\App\Entity\Media::class)->findOneBy(['title' => 'Nouveau Média Test']);
+        $this->assertNotNull($media, "Le média 'Nouveau Média Test' n'a pas été trouvé après l'ajout.");
+
         $client->request('GET', '/guest/media/delete/' . $media->getId());
-        $this->assertResponseRedirects();
+        $deleted = self::getContainer()->get('doctrine')->getRepository(\App\Entity\Media::class)->find($media->getId());
+        $this->assertNull($deleted, "Le média n'a pas été supprimé de la base de données.");
+
+
+        $this->assertResponseRedirects('/guest/media/');
+  
+        // Redémarrer le kernel pour purger Doctrine cache
+        $client->restart();
+
         $client->followRedirect();
-        $this->assertSelectorNotExists('.media-title:contains("Nouveau Média Test")');
+
+        $nodes = $client->getCrawler()->filter('tbody tr td:nth-child(2)');
+        foreach ($nodes as $node) {
+            $this->assertStringNotContainsString('Nouveau Média Test', $node->textContent);
+        }
+
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
     }
 }
