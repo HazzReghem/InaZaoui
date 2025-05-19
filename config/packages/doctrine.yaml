@@ -9,6 +9,8 @@ doctrine:
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        identity_generation_preferences:
+            Doctrine\DBAL\Platforms\PostgreSQLPlatform: 2 # 2 = GENERATOR_TYPE_SEQUENCE
         controller_resolver:
             auto_mapping: false
         mappings:

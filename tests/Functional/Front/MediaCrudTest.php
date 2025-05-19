@@ -19,14 +19,12 @@ class MediaCrudTest extends WebTestCase
         // Vérifiez que l'utilisateur existe
         $this->assertNotNull($testUser, 'Test user guest1@test.com not found in fixtures.');
 
-        // Connecter l'utilisateur
         $client->loginUser($testUser);
 
         // Aller à la page d'ajout
         $crawler = $client->request('GET', '/guest/media/add');
         $this->assertResponseIsSuccessful();
 
-        // Fichier fictif
         $filePath = __DIR__ . '/../../Fixtures/test.jpg';
         if (!file_exists(__DIR__.'/../../Fixtures/dummy.jpeg')) {
             touch(__DIR__.'/../../Fixtures/dummy.jpeg');
