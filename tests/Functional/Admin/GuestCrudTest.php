@@ -55,4 +55,50 @@ class GuestCrudTest extends WebTestCase
         $client->followRedirect();
         $this->assertSelectorNotExists('td:contains("' . $name . '")');
     }
+
+    public function testAdminCanUpdateGuest(): void
+    {
+        $client = static::createClient();
+
+        $admin = static::getContainer()->get(UserRepository::class)->findOneByEmail('admin@test.com');
+        $client->loginUser($admin);
+
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+
+        // Crée un guest temporaire
+        $guest = new User();
+        $guest->setName('Old Name');
+        $guest->setEmail('update_guest_' . uniqid() . '@example.com');
+        $guest->setRoles(['ROLE_USER']);
+        $guest->setIsBlocked(false);
+        $guest->setPassword('password');
+        $em->persist($guest);
+        $em->flush();
+
+        // Récupérer la page d'édition
+        $crawler = $client->request('GET', '/admin/guests/update/' . $guest->getId());
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->filter('form')->form();
+        $form['user[name]'] = 'Updated Name';
+        $form['user[email]'] = $guest->getEmail();
+        $form['user[password]'] = 'newpassword';
+
+
+        // Soumettre le formulaire
+        $client->submit($form);
+
+        // Suivre la redirection après soumission
+        $client->followRedirect();
+
+        // Vérifier que la nouvelle valeur est affichée dans le tableau
+        $this->assertStringContainsString('Updated Name', $client->getCrawler()->filter('table')->text());
+
+        $guestToRemove = $em->find(User::class, $guest->getId());
+        if ($guestToRemove) {
+            $em->remove($guestToRemove);
+            $em->flush();
+        }
+    }
+
 }

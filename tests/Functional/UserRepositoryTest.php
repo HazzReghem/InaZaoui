@@ -4,6 +4,7 @@ namespace App\Tests\Functional;
 
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 class UserRepositoryTest extends KernelTestCase
 {
@@ -53,4 +54,31 @@ class UserRepositoryTest extends KernelTestCase
 
         $this->assertEquals(['guest1@test.com', 'guest2@test.com'], $filtered);
     }
+
+    public function testUpgradePasswordWorksCorrectly(): void
+    {
+        $em = static::getContainer()->get(\Doctrine\ORM\EntityManagerInterface::class);
+
+        // Nettoyer l'utilisateur temp@test.com s'il existe
+        $existingUser = $em->getRepository(\App\Entity\User::class)->findOneBy(['email' => 'temp@test.com']);
+        if ($existingUser) {
+            $em->remove($existingUser);
+            $em->flush();
+        }
+
+        $user = new \App\Entity\User();
+        $user->setEmail('temp@test.com');
+        $user->setName('Temporary User');
+        $user->setIsBlocked(false);
+        $user->setPassword('old_password');
+
+        // Persister l'utilisateur avant de le mettre à jour
+        $em->persist($user);
+        $em->flush();
+
+        $this->repository->upgradePassword($user, 'new_hashed_pwd');
+
+        $this->assertEquals('new_hashed_pwd', $user->getPassword());
+    }
+
 }
