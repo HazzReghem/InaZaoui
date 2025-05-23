@@ -19,13 +19,30 @@ class HomeController extends AbstractController
         return $this->render('front/home.html.twig');
     }
 
+    // #[Route('/guests', name: 'guests')]
+    // public function guests(EntityManagerInterface $em): Response
+    // {
+    //     $guests = $em->getRepository(User::class)->findGuests();
+
+    //     return $this->render('front/guests.html.twig', [
+    //         'guests' => $guests,
+    //     ]);
+    // }
     #[Route('/guests', name: 'guests')]
-    public function guests(EntityManagerInterface $em): Response
+    public function guests(Request $request, EntityManagerInterface $em): Response
     {
-        $guests = $em->getRepository(User::class)->findGuests();
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $guests = $em->getRepository(User::class)->findGuests($limit, $offset);
+        $total = $em->getRepository(User::class)->countGuests(); // Méthode à créer pour compter
 
         return $this->render('front/guests.html.twig', [
             'guests' => $guests,
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
         ]);
     }
 

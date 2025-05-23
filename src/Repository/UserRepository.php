@@ -45,11 +45,43 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return array_filter($this->findAll(), fn($u) => in_array('ROLE_ADMIN', $u->getRoles()));
     }
 
-    public function findGuests(): array
+    public function findGuests(int $limit, int $offset): array
     {
-        return array_filter($this->findAll(), function ($u) {
-            return !in_array('ROLE_ADMIN', $u->getRoles()) && !$u->isBlocked();
-        });
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT u.id
+            FROM "user" u
+            WHERE u.roles::text LIKE :role
+            AND u.is_blocked = false
+            ORDER BY u.id ASC
+            LIMIT :limit OFFSET :offset
+        ';
+
+        $stmt = $conn->executeQuery($sql, [
+            'role' => '%ROLE_USER%',
+            'limit' => $limit,
+            'offset' => $offset,
+        ], [
+            'role' => \PDO::PARAM_STR,
+            'limit' => \PDO::PARAM_INT,
+            'offset' => \PDO::PARAM_INT,
+        ]);
+
+        $userIds = array_column($stmt->fetchAllAssociative(), 'id');
+
+        if (empty($userIds)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.medias', 'm')
+            ->addSelect('m')
+            ->where('u.id IN (:ids)')
+            ->setParameter('ids', $userIds)
+            ->orderBy('u.id', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function findAllGuests(): array
@@ -57,6 +89,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return array_filter($this->findAll(), fn($u) => !in_array('ROLE_ADMIN', $u->getRoles()));
     }
 
+    public function countGuests(): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT COUNT(u.id) AS total
+            FROM "user" u
+            WHERE u.roles::text LIKE :role
+            AND u.is_blocked = false
+        ';
+
+        $stmt = $conn->executeQuery($sql, ['role' => '%ROLE_USER%']);
+        return (int) $stmt->fetchOne();
+    }
 
 //    /**
 //     * @return User[] Returns an array of User objects

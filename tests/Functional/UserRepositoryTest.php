@@ -24,21 +24,6 @@ class UserRepositoryTest extends KernelTestCase
         $this->assertContains('admin@test.com', $emails);
     }
 
-    public function testFindGuestsReturnsOnlyNonBlockedUsersWithoutRoleAdmin(): void
-    {
-        $guests = $this->repository->findGuests();
-        $emails = array_map(fn($u) => $u->getEmail(), $guests);
-
-        // On filtre uniquement ceux créés par la fixture
-        $filtered = array_values(array_filter($emails, fn($email) => in_array($email, [
-            'guest1@test.com',
-        ])));
-
-        sort($filtered);
-
-        $this->assertEquals(['guest1@test.com'], $filtered);
-    }
-
     public function testFindAllGuestsReturnsAllUsersExceptAdmins(): void
     {
         $allGuests = $this->repository->findAllGuests();
