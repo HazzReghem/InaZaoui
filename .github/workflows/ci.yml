@@ -54,7 +54,7 @@ jobs:
 
     - name: Import backup SQL
       run: |
-        psql postgresql://postgres:postgres@127.0.0.1:5432/ina_zaoui_test -f backup/backup.sql
+        psql postgresql://postgres:postgres@postgres:5432/ina_zaoui_test -f backup/backup.sql
 
     - name: Run PHPUnit tests
       run: php bin/phpunit --coverage-text
