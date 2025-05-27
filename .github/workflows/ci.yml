@@ -1,64 +1,3 @@
-# name: CI Symfony
-
-# on:
-#   push:
-#     branches: [main, develop]
-#   pull_request:
-#     branches: [main, develop]
-
-# jobs:
-#   build:
-
-#     runs-on: ubuntu-latest
-
-#     services:
-#       postgres:
-#         image: postgres:16
-#         env:
-#           POSTGRES_USER: postgres
-#           POSTGRES_PASSWORD: postgres
-#           POSTGRES_DB: ina_zaoui_test
-#         ports:
-#           - 5432:5432
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
-
-#     env:
-#       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/ina_zaoui_test?serverVersion=16&charset=utf8"
-
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-
-#     - name: Setup PHP
-#       uses: shivammathur/setup-php@v2
-#       with:
-#         php-version: '8.2'
-#         extensions: mbstring, intl, pdo_pgsql, xml, zip
-
-#     - name: Install Composer dependencies
-#       run: composer install --no-progress --prefer-dist --optimize-autoloader
-
-#     - name: Wait for PostgreSQL
-#       run: |
-#         until pg_isready -h localhost -p 5432; do
-#           echo "Waiting for PostgreSQL..."
-#           sleep 1
-#         done
-
-#     - name: Create test database
-#       run: php bin/console doctrine:database:create --env=test
-
-#     - name: Import backup SQL
-#       run: |
-#         psql postgresql://postgres:postgres@localhost:5432/ina_zaoui_test -f backup/backup.sql
-
-#     - name: Run PHPUnit tests
-#       run: php bin/phpunit --coverage-text
-
 name: CI Symfony
 
 on:
@@ -69,6 +8,7 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     services:
@@ -81,7 +21,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready -U postgres
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -102,40 +42,19 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-    # L'étape `Wait for PostgreSQL` est essentielle et doit pointer vers localhost.
-    # Nous ajoutons l'utilisateur pour être plus précis.
     - name: Wait for PostgreSQL
       run: |
-            until pg_isready -h localhost -p 5432 -U postgres -d ina_zaoui_test; do
-            echo "Waiting for PostgreSQL..."
-            sleep 1
-            done
+        until pg_isready -h localhost -p 5432 -U postgres -d ina_zaoui_test; do
+        echo "Waiting for PostgreSQL..."
+        sleep 1
+        done
 
-    # Option 1: Si votre backup.sql contient la création des tables et des données.
-    # C'est généralement le cas pour un "backup" complet.
+    - name: Create test database
+      run: php bin/console doctrine:database:create --env=test
+
     - name: Import backup SQL
       run: |
-        # Utilisez localhost pour vous connecter au service PostgreSQL exposé
         psql postgresql://postgres:postgres@localhost:5432/ina_zaoui_test -f backup/backup.sql
-      # Si votre backup.sql ne crée pas la base de données, vous pourriez vouloir
-      # ajouter la création de la base de données AVANT cette étape
-      # Si `psql` échoue avec "database does not exist", décommentez l'étape ci-dessous
-      # et assurez-vous que le nom de la DB dans `psql` corresponde à `POSTGRES_DB` du service.
-      # - name: Create test database (if backup.sql doesn't create it)
-      #   run: php bin/console doctrine:database:create --env=test --if-not-exists
-
-
-    # Option 2: Si votre backup.sql contient UNIQUEMENT les données
-    # et que vous avez besoin de doctrine pour créer la structure des tables.
-    # Dans ce cas, vous devrez exécuter les migrations Doctrine APRÈS la création de la DB.
-    # - name: Create test database
-    #   run: php bin/console doctrine:database:create --env=test --if-not-exists
-    # - name: Run Doctrine Migrations
-    #   run: php bin/console doctrine:migrations:migrate --env=test --no-interaction
-    # - name: Import backup SQL (data only)
-    #   run: |
-    #     psql postgresql://postgres:postgres@localhost:5432/ina_zaoui_test -f backup/backup.sql
-
 
     - name: Run PHPUnit tests
       run: php bin/phpunit --coverage-text
