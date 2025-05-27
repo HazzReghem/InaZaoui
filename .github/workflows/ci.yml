@@ -87,11 +87,7 @@ jobs:
           --health-retries 5
 
     env:
-      # Cette variable d'environnement sera utilisée par Symfony/Doctrine
-      # C'est la variable à laquelle votre application se connectera.
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/ina_zaoui_test?serverVersion=16&charset=utf8"
-      # PANTHER_APP_ENV: panther # Si vous utilisez Panther, vous pourriez vouloir l'activer ici.
-      # PANTHER_ERROR_SCREENSHOT_DIR: ./var/error-screenshots # et ça aussi.
 
     steps:
     - name: Checkout code
@@ -110,10 +106,10 @@ jobs:
     # Nous ajoutons l'utilisateur pour être plus précis.
     - name: Wait for PostgreSQL
       run: |
-        until pg_isready -h localhost -p 5432; do
-          echo "Waiting for PostgreSQL..."
-          sleep 1
-        done
+            until pg_isready -h localhost -p 5432 -U postgres -d ina_zaoui_test; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+            done
 
     # Option 1: Si votre backup.sql contient la création des tables et des données.
     # C'est généralement le cas pour un "backup" complet.
