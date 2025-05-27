@@ -110,7 +110,11 @@ jobs:
           sleep 1
         done
 
-    - name: Create database schema
+    - name: Create test database manually
+      run: |
+          psql -h 127.0.0.1 -U postgres -c 'CREATE DATABASE "ina_zaoui_test_test";'
+
+    - name: Run Doctrine schema update
       run: php bin/console doctrine:schema:create --env=test
 
     - name: Load test fixtures
