@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/ina_zaoui_test?serverVersion=16&charset=utf8"
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/ina_zaoui_test?serverVersion=16&charset=utf8"
 
     steps:
     - name: Checkout code
