@@ -49,8 +49,8 @@ jobs:
           sleep 1
         done
 
-    # - name: Create test database
-    #   run: php bin/console doctrine:database:create --env=test
+    - name: Create test database
+      run: php bin/console doctrine:database:create --env=test
 
     - name: Import backup SQL
       run: |
