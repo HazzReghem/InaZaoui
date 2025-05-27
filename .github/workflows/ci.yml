@@ -110,7 +110,7 @@ jobs:
     # Nous ajoutons l'utilisateur pour être plus précis.
     - name: Wait for PostgreSQL
       run: |
-        until pg_isready -h localhost -p 5432 -U postgres; do
+        until pg_isready -h localhost -p 5432; do
           echo "Waiting for PostgreSQL..."
           sleep 1
         done
