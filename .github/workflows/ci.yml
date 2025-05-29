@@ -121,7 +121,7 @@ jobs:
       run: php bin/console doctrine:fixtures:load --group=test --no-interaction --env=test
 
     - name : Run PHPStan
-      run: vendor/bin/phpstan analyse --no-progress --error-format=table
+      run: vendor/bin/phpstan analyse --no-progress --error-format=table --configuration=phpstan.neon --level=5
 
     - name: Run PHPUnit tests
       run: php bin/phpunit --coverage-text
