@@ -1,6 +1,6 @@
 # Inazaoui – Gestion d'albums et médias
 
-Projet Symfony permettant le partage de photo entre utillisateurs, avec une gestion de comptes administrateurs et invités depuis un panel Admin, la création d'albums et le téléversement de médias.
+Projet Symfony permettant le partage de photo entre utillisateurs, avec une gestion de comptes administrateurs et invités depuis un panel Admin, la création d'albums et également la gestion des médias.
 Site entièrement update de la version 5 de Symfony à 7.2
 
 ---
