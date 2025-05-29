@@ -81,7 +81,7 @@ class GuestCrudTest extends WebTestCase
 
         $form = $crawler->filter('form')->form();
         $form['user[name]'] = 'Updated Name';
-        $form['user[email]'] = $guest->getEmail();
+        $form['user[email]'] = (string) $guest->getEmail();
         $form['user[password]'] = 'newpassword';
 
 

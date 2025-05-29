@@ -9,6 +9,6 @@ class BootTest extends KernelTestCase
     public function testBoot(): void
     {
         self::bootKernel();
-        $this->assertTrue(true);
+        $this->assertNotNull(self::$kernel);
     }
 }

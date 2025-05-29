@@ -19,7 +19,7 @@ class UserCheckerTest extends TestCase
 
         // Ne doit rien lancer
         $checker->checkPreAuth($user);
-        $this->assertTrue(true);
+        // pas d'assertion car on ne s'attend pas à une exception
     }
 
     public function testCheckPreAuthWithBlockedUser(): void
@@ -41,6 +41,6 @@ class UserCheckerTest extends TestCase
         $checker = new UserChecker();
 
         $checker->checkPreAuth($mockUser);
-        $this->assertTrue(true);
+        //  pas d'assertion car on ne s'attend pas à une exception
     }
 }

@@ -50,7 +50,15 @@ class MediaController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $media->setUser($this->getUser());
+            // $media->setUser($this->getUser());
+            $user = $this->getUser();
+
+            if (!$user instanceof \App\Entity\User) {
+                throw new \LogicException('Utilisateur invalide. L\'instance doit être de type App\Entity\User.');
+            }
+
+            $media->setUser($user);
+
             $media->setPath('uploads/' . md5(uniqid()) . '.' . $media->getFile()->guessExtension());
             $media->getFile()->move('uploads/', $media->getPath());
 
