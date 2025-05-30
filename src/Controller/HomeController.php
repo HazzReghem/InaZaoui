@@ -36,7 +36,7 @@ class HomeController extends AbstractController
         $offset = ($page - 1) * $limit;
 
         $guests = $em->getRepository(User::class)->findGuests($limit, $offset);
-        $total = $em->getRepository(User::class)->countGuests(); // Méthode à créer pour compter
+        $total = $em->getRepository(User::class)->countGuests();
 
         return $this->render('front/guests.html.twig', [
             'guests' => $guests,
