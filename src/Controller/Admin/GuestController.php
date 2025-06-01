@@ -34,8 +34,10 @@ class GuestController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setRoles(['ROLE_USER']);
             $user->setIsBlocked(false);
-            $user->setPassword($hasher->hashPassword($user, 'password'));
+            // $user->setPassword($hasher->hashPassword($user, 'password'));
 
+            $hashedPassword = $hasher->hashPassword($user, $user->getPassword());
+            $user->setPassword($hashedPassword);
             $em->persist($user);
             $em->flush();
 
