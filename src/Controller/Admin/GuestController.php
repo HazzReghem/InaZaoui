@@ -28,16 +28,20 @@ class GuestController extends AbstractController
     public function add(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'is_edit' => false, // Indicate that this is not an edit form
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setRoles(['ROLE_USER']);
             $user->setIsBlocked(false);
-            // $user->setPassword($hasher->hashPassword($user, 'password'));
 
-            $hashedPassword = $hasher->hashPassword($user, $user->getPassword());
-            $user->setPassword($hashedPassword);
+            $user->setPassword($hasher->hashPassword($user, 'password'));
+
+            // $hashedPassword = $hasher->hashPassword($user, $user->getPassword());
+            // $user->setPassword($hashedPassword);
+
             $em->persist($user);
             $em->flush();
 
@@ -58,7 +62,9 @@ class GuestController extends AbstractController
             throw $this->createNotFoundException('Guest not found or not editable.');
         }
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'is_edit' => true, // Indicate that this is an edit form
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

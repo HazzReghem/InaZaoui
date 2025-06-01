@@ -25,20 +25,28 @@ class UserType extends AbstractType
                 'label' => 'Email',
                 'attr' => ['placeholder' => 'Entrez l\'email de votre invité']
             ])
-            ->add('password', PasswordType::class, [
-                'label' => 'Mot de passe',
-                'attr' => ['placeholder' => 'Entrez le mot de passe de votre invité']
-            ])
+            // ->add('password', PasswordType::class, [
+            //     'label' => 'Mot de passe',
+            //     'attr' => ['placeholder' => 'Entrez le mot de passe de votre invité']
+            // ])
             ->add('isBlocked', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Bloqué ?'
             ]);
+            if ($options['is_edit']) {
+            $builder->add('password', PasswordType::class, [
+                'label' => 'Mot de passe',
+                'required' => false, 
+                'empty_data' => '',
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_edit' => false, // Option to determine if the form is for editing
         ]);
     }
 }
